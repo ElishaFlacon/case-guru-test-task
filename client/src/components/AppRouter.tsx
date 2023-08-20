@@ -23,8 +23,10 @@ const AppRouter: FC = () => {
 
 
     return (
+        // тут я достаю роль из локалстораджа, потому что, если досавать его из data, то будет задержка
+        // и на доли секунд будет видна форма авторизации
         <Routes>
-            {isAuth && data?.user.role === 'hr'
+            {isAuth && localStorage.getItem('role') === 'hr'
                 ?
                 hrRoutes.map((route) =>
                     <Route
@@ -33,7 +35,7 @@ const AppRouter: FC = () => {
                         element={<route.component />}
                     />
                 )
-                : isAuth && data?.user.role === 'worker' ?
+                : isAuth && localStorage.getItem('role') === 'worker' ?
                     workerRoutes.map((route) =>
                         <Route
                             key={route.path}
