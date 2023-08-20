@@ -8,7 +8,7 @@ import { useFetching } from '../../hooks/useFetching';
 import { Line } from 'react-chartjs-2';
 import Tabl from '../../components/Tabl/Tabl';
 import { IHRTable } from '../../types';
-import { allEmployText, allStatsText, birthdayText, changeButtonText, createButtonText, fullTableKeys, personalDataText } from '../../config';
+import { allEmployText, allStatsText, birthdayText, changeButtonText, changeText, createButtonText, fullTableKeys, personalDataText } from '../../config';
 import LogoutButton from '../../components/LogoutButton/LogoutButton';
 import { Link } from 'react-router-dom';
 
@@ -76,7 +76,7 @@ const Hr: FC = () => {
             </Link>
 
             <Link to='/change'>
-                <Button variant='contained' fullWidth>{changeButtonText}</Button>
+                <Button variant='contained' fullWidth>{changeText}</Button>
             </Link>
 
             <LogoutButton />
