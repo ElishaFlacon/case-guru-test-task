@@ -4,7 +4,7 @@ import { UserModel } from './users.model';
 import { UserDto, FullUsersDto, MiniUsersDto, CreateUserDto } from './dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Op } from 'sequelize';
-import { getMonthStartEndPoints, getPreviosMonths, getMonthSalary } from 'src/utils';
+import { getMonthStartEndPoints, getPreviosMonths, getMonthSalary, getYearStartEndPoints } from 'src/utils';
 
 
 @Injectable()
@@ -43,7 +43,7 @@ export class UsersService {
             throw new UnauthorizedException({ message: 'Пользователя не существует!' });
         }
 
-        return new FullUsersDto(user);
+        return { user: new FullUsersDto(user), token };
     }
 
     // получаем всех пользователей
@@ -86,44 +86,63 @@ export class UsersService {
     // получаем количество нанятых сотрудников в этом месяце и в этом году
     async getCountHiring() {
         const { startMonth, endMonth } = getMonthStartEndPoints();
+        const { startYear, endYear } = getYearStartEndPoints();
 
-        const { count } = await this.userRepository.findAndCountAll({
+        const month = await this.userRepository.findAndCountAll({
             where: {
                 date_of_hiring: { [Op.gt]: startMonth, [Op.lt]: endMonth },
                 isWorking: true,
             }
         });
 
-        return count;
+        const year = await this.userRepository.findAndCountAll({
+            where: {
+                date_of_hiring: { [Op.gt]: startYear, [Op.lt]: endYear },
+                isWorking: true,
+            }
+        });
+
+        return [month.count, year.count];
     }
 
     // получаем количество уволеных сотрудников в этом месяце и в этом году
     async getCountDismiss() {
         const { startMonth, endMonth } = getMonthStartEndPoints();
+        const { startYear, endYear } = getYearStartEndPoints();
 
-        const { count } = await this.userRepository.findAndCountAll({
+        const month = await this.userRepository.findAndCountAll({
             where: {
                 date_of_hiring: { [Op.gt]: startMonth, [Op.lt]: endMonth },
                 isWorking: false,
             }
         });
 
-        return count;
+        const year = await this.userRepository.findAndCountAll({
+            where: {
+                date_of_hiring: { [Op.gt]: startYear, [Op.lt]: endYear },
+                isWorking: true,
+            }
+        });
+
+        return [month.count, year.count];
     }
 
-    // получаем количество сотрудников у которых день рожденье в ближайший месяц
+    // получаем количество сотрудников у которых день рожденье в ближайший месяц (получается чуть чуть больше чем месяц, не страшно :P)
     async getUpcomingBirthdays() {
-        const { endMonth } = getMonthStartEndPoints();
+        const { startMonth, endMonth } = getMonthStartEndPoints();
 
         const users = await this.userRepository.findAll({
             where: {
-                date_of_hiring: { [Op.gt]: new Date().getDate(), [Op.lt]: endMonth },
+                birthdayMonth: {
+                    [Op.gt]: new Date().getMonth(),
+                    [Op.lt]: new Date().getMonth() + 1,
+                },
                 isWorking: true,
                 isAvailable: true,
             }
         });
 
-        return users;
+        return users.map((user) => new FullUsersDto(user));
     }
 
     // получаем ожидаемые выплаты ЗП, возвращается объект с
@@ -142,7 +161,7 @@ export class UsersService {
         const monthSalary = getMonthSalary(users);
         const monthList = getPreviosMonths();
 
-        return { monthSalary, monthList };
+        return { monthSalary: monthSalary.reverse(), monthList: monthList.reverse() };
     }
 }
 
