@@ -12,7 +12,7 @@ import { UsersModule } from 'src/users/users.module';
         JwtModule.register({
             secret: process.env.SECRET_KEY || 'super-secret-key',
             signOptions: {
-                expiresIn: '24h',
+                expiresIn: '3h',
             }
         }),
         forwardRef(() => UsersModule),
