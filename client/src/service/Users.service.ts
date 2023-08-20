@@ -3,7 +3,7 @@ import { IUser } from "../types/User";
 
 
 export default class UsersService {
-    static async update(user: IUser) {
+    static async update(user: IUser | any) {
         return $authApi.post(`/users/update`, user);
     }
 
