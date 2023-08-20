@@ -22,9 +22,11 @@ export class UsersService {
 
     // обновляет данные пользователя, для нахождения пользователя используется availableLink
     async update(dto: UserDto) {
-        const birthdayMonth = new Date(dto.birthday).getMonth() + 1
+        const { birthdayMonth } = await this.getByLink(dto.availableLink);
+        const newBirthdayMonth = new Date(dto.birthday).getMonth() + 1
+
         const candidate = await this.userRepository.update(
-            { ...dto, birthdayMonth: String(birthdayMonth) },
+            { ...dto, birthdayMonth: String(dto.birthday ? newBirthdayMonth : birthdayMonth) },
             { where: { availableLink: dto.availableLink } }
         );
         // в поле candidate возвращается массив с числом внутри, если внутри 0 то прокидываем ошибку
