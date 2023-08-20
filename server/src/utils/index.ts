@@ -15,9 +15,8 @@ export const getYearStartEndPoints = () => {
             .setMonth(new Date().getMonth() - new Date().getMonth() - 1)
     );
     const endYear = new Date(
-        new Date(new Date().setDate(new Date().getDate() - new Date().getDate()))
-            .setMonth(new Date().getMonth() - new Date().getMonth() - 1)
-    );
+        new Date(new Date(new Date().setDate(new Date().getDate() - new Date().getDate()))
+            .setMonth(new Date().getMonth() - new Date().getMonth() - 1)).setFullYear(new Date().getFullYear() + 1));
     return { startYear, endYear };
 }
 
