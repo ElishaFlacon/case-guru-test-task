@@ -69,8 +69,8 @@
  📺 Демо:
 </h2>
 
-- <a href="">Нажать чтобы демо видео!</a>
-- <video src="" />
+- <a href="https://github.com/ElishaFlacon/case-guru-test-task/assets/83610362/8257a161-d24e-4ba3-9813-0dfd8f542f8a">Нажать чтобы демо видео!</a>
+- <video src="https://github.com/ElishaFlacon/case-guru-test-task/assets/83610362/8257a161-d24e-4ba3-9813-0dfd8f542f8a" />
 
 
 
