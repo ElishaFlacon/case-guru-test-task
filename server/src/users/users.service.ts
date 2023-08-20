@@ -22,7 +22,11 @@ export class UsersService {
 
     // обновляет данные пользователя, для нахождения пользователя используется availableLink
     async update(dto: UserDto) {
-        const candidate = await this.userRepository.update(dto, { where: { availableLink: dto.availableLink } });
+        const birthdayMonth = new Date(dto.birthday).getMonth() + 1
+        const candidate = await this.userRepository.update(
+            { ...dto, birthdayMonth: String(birthdayMonth) },
+            { where: { availableLink: dto.availableLink } }
+        );
         // в поле candidate возвращается массив с числом внутри, если внутри 0 то прокидываем ошибку
         if (!candidate[0]) {
             throw new HttpException('Пользователь не был изменен!', HttpStatus.BAD_REQUEST);
@@ -90,14 +94,14 @@ export class UsersService {
 
         const month = await this.userRepository.findAndCountAll({
             where: {
-                date_of_hiring: { [Op.gt]: startMonth, [Op.lt]: endMonth },
+                date_of_hiring: { [Op.gte]: startMonth, [Op.lte]: endMonth },
                 isWorking: true,
             }
         });
 
         const year = await this.userRepository.findAndCountAll({
             where: {
-                date_of_hiring: { [Op.gt]: startYear, [Op.lt]: endYear },
+                date_of_hiring: { [Op.gte]: startYear, [Op.lte]: endYear },
                 isWorking: true,
             }
         });
@@ -112,15 +116,15 @@ export class UsersService {
 
         const month = await this.userRepository.findAndCountAll({
             where: {
-                date_of_hiring: { [Op.gt]: startMonth, [Op.lt]: endMonth },
+                date_of_hiring: { [Op.gte]: startMonth, [Op.lte]: endMonth },
                 isWorking: false,
             }
         });
 
         const year = await this.userRepository.findAndCountAll({
             where: {
-                date_of_hiring: { [Op.gt]: startYear, [Op.lt]: endYear },
-                isWorking: true,
+                date_of_hiring: { [Op.gte]: startYear, [Op.lte]: endYear },
+                isWorking: false,
             }
         });
 
@@ -129,13 +133,11 @@ export class UsersService {
 
     // получаем количество сотрудников у которых день рожденье в ближайший месяц (получается чуть чуть больше чем месяц, не страшно :P)
     async getUpcomingBirthdays() {
-        const { startMonth, endMonth } = getMonthStartEndPoints();
-
         const users = await this.userRepository.findAll({
             where: {
                 birthdayMonth: {
-                    [Op.gt]: new Date().getMonth(),
-                    [Op.lt]: new Date().getMonth() + 1,
+                    [Op.gte]: new Date().getMonth(),
+                    [Op.lte]: new Date().getMonth() + 1,
                 },
                 isWorking: true,
                 isAvailable: true,
