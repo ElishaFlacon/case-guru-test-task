@@ -71,7 +71,7 @@ const changeInputs: IIputData[] = [
     {
         key: 'isWorking',
         field: 'select',
-        helperText: 'Роль',
+        helperText: 'Он работает',
         defaultValue: 'true',
         options: [
             { value: 'true', title: 'Да' },
@@ -81,7 +81,7 @@ const changeInputs: IIputData[] = [
     {
         key: 'isAvailable',
         field: 'select',
-        helperText: 'Роль',
+        helperText: 'Аккаунт активирован',
         defaultValue: 'true',
         options: [
             { value: 'true', title: 'Да' },
@@ -96,7 +96,16 @@ const Change: FC = () => {
     const changeData = useForm<IUser>();
 
     const [change, loading, error] = useFetching(async (data: IUser) => {
-        const response = await UsersService.update(data);
+        // тут мы отделяем пустые поля, потому что иначе они изменят поля пользователя на null
+        const fullfieldData = {};
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== '') {
+                (fullfieldData as any)[key as keyof typeof fullfieldData] = value;
+            }
+        });
+
+        const response = await UsersService.update(fullfieldData);
+        setSnack([true, 'Пользователь изменен!', 'success']);
         changeData.reset();
     });
 
