@@ -32,6 +32,9 @@ export class UserModel extends Model<UserModel, IUserCreationAttributes> {
     birthday: string;
 
     @Column({ type: DataType.STRING, allowNull: false })
+    birthdayMonth: string;
+
+    @Column({ type: DataType.STRING, allowNull: false })
     position: string;
 
     @Column({ type: DataType.INTEGER, allowNull: false })
